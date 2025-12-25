@@ -1016,7 +1016,9 @@
                         </div>
                         <div class="stat-content">
                             <div class="stat-value" id="stat-today-ot">0</div>
-                            <div class="stat-label">NV có OT hôm nay</div>
+                            <!-- FIX: Đổi label từ "NV có OT hôm nay" thành "NV có OT trong tháng" -->
+                            <div class="stat-label">NV có OT trong tháng</div>
+                            <!-- END FIX -->
                         </div>
                     </div>
                 </div>
@@ -1893,15 +1895,40 @@
                 document.getElementById('stat-total-ot').textContent = 
                     Math.max(0, STATS_CACHE.totalHours).toFixed(1);
                 
-                const todayOT = DB.ot[date] || {};
-                const todayOTCount = Object.keys(todayOT).filter(staffId => {
-                    const ot = todayOT[staffId];
-                    return (ot.h15 + ot.h21 + ot.h20 + ot.h35) > 0;
-                }).length;
-                document.getElementById('stat-today-ot').textContent = todayOTCount;
+                // FIX: Đổi tính NV có OT trong tháng thay vì chỉ hôm nay
+                const date = document.getElementById('workDate').value;
+                if(!date) return;
+                const month = date.substring(0,7);
+                const monthOTCount = calculateMonthOTCount(month);
+                document.getElementById('stat-today-ot').textContent = monthOTCount;
+                // END FIX
             }
         }
         
+        // FIX: Thêm hàm tính số NV có OT trong tháng
+        function calculateMonthOTCount(month) {
+            const staffSet = new Set();
+            
+            Object.keys(DB.ot).forEach(date => {
+                if(date.startsWith(month)) {
+                    Object.keys(DB.ot[date]).forEach(staffId => {
+                        const ot = DB.ot[date][staffId];
+                        const h15 = Number(ot.h15) || 0;
+                        const h21 = Number(ot.h21) || 0;
+                        const h20 = Number(ot.h20) || 0;
+                        const h35 = Number(ot.h35) || 0;
+                        
+                        if(h15 + h21 + h20 + h35 > 0) {
+                            staffSet.add(staffId);
+                        }
+                    });
+                }
+            });
+            
+            return staffSet.size;
+        }
+        
+        // FIX: Sửa hàm updateStatsFull để tính đúng
         function updateStatsFull() {
             const date = document.getElementById('workDate').value;
             if(!date) return;
@@ -1911,7 +1938,9 @@
             
             let totalHours = 0;
             let totalMoney = 0;
-            let todayOTCount = 0;
+            
+            // FIX: Tính NV có OT trong tháng
+            const monthOTCount = calculateMonthOTCount(month);
             
             Object.keys(DB.ot).forEach(d => {
                 if(d.startsWith(month)) {
@@ -1935,23 +1964,18 @@
                 }
             });
             
-            const todayOT = DB.ot[date] || {};
-            todayOTCount = Object.keys(todayOT).filter(staffId => {
-                const ot = todayOT[staffId];
-                return (ot.h15 + ot.h21 + ot.h20 + ot.h35) > 0;
-            }).length;
-            
             STATS_CACHE.totalMoney = totalMoney;
             STATS_CACHE.totalHours = totalHours;
-            STATS_CACHE.todayOTCount = todayOTCount;
+            STATS_CACHE.todayOTCount = monthOTCount; // FIX: Lưu số NV có OT trong tháng
             STATS_CACHE.isDirty = false;
             
             document.getElementById('stat-total-staff').textContent = DB.staff.length;
             document.getElementById('stat-total-ot').textContent = totalHours.toFixed(1);
             document.getElementById('stat-total-money').textContent = 
                 isNaN(totalMoney) ? '0 ₫' : Math.round(totalMoney).toLocaleString() + ' ₫';
-            document.getElementById('stat-today-ot').textContent = todayOTCount;
+            document.getElementById('stat-today-ot').textContent = monthOTCount; // FIX: Hiển thị số NV có OT trong tháng
         }
+        // END FIX
         
         function handleDateChange() {
             STATS_CACHE.isDirty = true;
@@ -2176,9 +2200,10 @@
             }
             
             // Load history for this staff
-            loadStaffOTHistoryById(staffId);
+            loadStaffOTHistoryById(staffId, true);
         }
         
+        // FIX: Sửa hàm loadStaffOTHistoryById để có fallback local data
         async function loadStaffOTHistoryById(staffId, showLoading = false) {
             if (!staffId) {
                 clearHistoryTable();
@@ -2227,7 +2252,7 @@
             } catch (error) {
                 console.error("❌ Lỗi tải lịch sử OT:", error);
                 
-                // Fallback: Use local data
+                // FIX: Luôn load từ local data nếu có
                 loadStaffHistoryFromLocal(staffId, fromDate, toDate, month);
                 
                 if (showLoading) {
@@ -2236,6 +2261,7 @@
                 }
             }
         }
+        // END FIX
         
         function loadStaffHistoryFromLocal(staffId, fromDate, toDate, month) {
             const staff = DB.staff.find(s => s.id === staffId);
@@ -2453,7 +2479,7 @@
                         <i class="fas fa-user" style="font-size:2rem; margin-bottom:10px;"></i><br>
                         Vui lòng nhập Mã NV để xem lịch sử OT
                     </td>
-                </tr>`;
+                    </tr>`;
             
             document.getElementById('history-total-hours').textContent = '0';
             document.getElementById('history-total-days').textContent = '0';
