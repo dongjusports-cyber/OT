@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DONGJU SPORT - OT SYSTEM Design by Thanh Thien</title>
+    <title>DONGJU SPORT - OT SYSTEM v6.4 (Stable Input)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -102,7 +102,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">DONGJU SPORT</div>
-                <div style="opacity:0.7; font-size:0.8rem">Version 6.3 (Stable)</div>
+                <div style="opacity:0.7; font-size:0.8rem">Version 6.4 (Stable Input)</div>
             </div>
             <div class="nav-items">
                 <div id="nav-staff" class="nav-item active" onclick="switchTab('staff')"><i class="fas fa-users"></i> Nhân Sự</div>
@@ -335,7 +335,14 @@
         window.onload = function() {
             document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
             loadLocal();
-            if(DB.staff.length===0) forceReload(); else { renderStaff(); updateDeptList(); renderAccounts(); updateLastBackupTime(); }
+            // FIX: Không tự động reload nếu DB trống, để người dùng nhập liệu
+            if(DB.staff.length===0) { 
+                console.log("Database trống, sẵn sàng nhập liệu mới.");
+                // Tự động load 1 lần đầu
+                forceReload();
+            } else { 
+                renderStaff(); updateDeptList(); renderAccounts(); updateLastBackupTime(); 
+            }
         };
 
         function switchTab(t) {
@@ -408,7 +415,6 @@
                 for(let i=1; i<json.length; i++) {
                     const row = json[i];
                     if(!row || row.length < 2) continue;
-                    // FIX: Check null before trim
                     const id = row[0] ? String(row[0]).trim() : "";
                     const name = row[1] ? String(row[1]).trim() : "";
                     const dept = row[2] ? String(row[2]).trim() : "";
@@ -450,13 +456,21 @@
             QUEUE.isSending=true; updateQueueUI();
             const batch = QUEUE.items.splice(0, QUEUE.batchSize);
             const payload={}; batch.forEach(i=>{ if(!payload[i.d])payload[i.d]={}; if(!payload[i.d][i.sid])payload[i.d][i.sid]={}; payload[i.d][i.sid][i.f]=i.v; });
-            try { await fetch(API_URL+"?action=saveBatch&data="+encodeURIComponent(JSON.stringify(payload))); } catch(e) { QUEUE.items=[...batch,...QUEUE.items]; }
+            try { 
+                await fetch(API_URL+"?action=saveBatch&data="+encodeURIComponent(JSON.stringify(payload))); 
+            } catch(e) { 
+                console.warn("Lỗi lưu, thử lại sau...", e);
+                QUEUE.items=[...batch,...QUEUE.items]; 
+            }
             QUEUE.isSending=false; updateQueueUI(); if(QUEUE.items.length>0) setTimeout(processQueue, 500);
         }
         function updateQueueUI() {
             const q=document.getElementById('queueStatus'); 
             if(QUEUE.items.length>0||QUEUE.isSending) { q.classList.remove('hidden'); document.getElementById('queueCountBadge').innerText=QUEUE.items.length; } 
-            else q.classList.add('hidden');
+            else { 
+                q.classList.add('hidden'); 
+                // FIX: Không reload trang khi lưu xong
+            }
         }
 
         // --- OT ---
@@ -695,9 +709,9 @@
         function renderAccounts() {
             document.getElementById('accountBody').innerHTML=DB.users.map(u=>`<tr><td><b>${u.username}</b></td><td>${u.role}</td><td>${u.created.split('T')[0]}</td><td><i class="fas fa-trash" onclick="if(confirm('Xóa?')){DB.users=DB.users.filter(x=>x.username!=='${u.username}');saveLocal();renderAccounts()}"></i></td></tr>`).join('');
         }
-        function saveLocal() { localStorage.setItem('dongju_v55', JSON.stringify(DB)); }
-        function loadLocal() { const d=localStorage.getItem('dongju_v55'); if(d) DB=JSON.parse(d); }
-        function clearAllData() { if(confirm('Reset toàn bộ?')) { localStorage.removeItem('dongju_v55'); localStorage.removeItem('dongju_last_backup'); location.reload(); } }
+        function saveLocal() { localStorage.setItem('dongju_v64', JSON.stringify(DB)); }
+        function loadLocal() { const d=localStorage.getItem('dongju_v64'); if(d) DB=JSON.parse(d); }
+        function clearAllData() { if(confirm('Reset toàn bộ?')) { localStorage.removeItem('dongju_v64'); localStorage.removeItem('dongju_last_backup'); location.reload(); } }
         async function forceReload() {
             document.getElementById('syncStatus').innerText="Đang tải...";
             try { const res=await fetch(API_URL+"?action=load"); const d=await res.json(); if(d.success){ DB.staff=d.staff; DB.ot=d.ot; saveLocal(); location.reload(); } }
@@ -728,4 +742,4 @@
         function toggleTurbo() { TURBO_MODE=!TURBO_MODE; document.getElementById('turboBtn').innerText=TURBO_MODE?"Turbo: ON":"Turbo: OFF"; QUEUE.batchSize=TURBO_MODE?50:20; }
     </script>
 </body>
-</html>
+</html>v
