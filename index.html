@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DONGJU SPORT - OT SYSTEM v6.7 (Connected)</title>
+    <title>DONGJU SPORT - OT SYSTEM v6.8 (Fix Save Staff)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -102,7 +102,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">DONGJU SPORT</div>
-                <div style="opacity:0.7; font-size:0.8rem">Version 6.7 (Connected)</div>
+                <div style="opacity:0.7; font-size:0.8rem">Version 6.8 (Fix Save Staff)</div>
             </div>
             <div class="nav-items">
                 <div id="nav-staff" class="nav-item active" onclick="switchTab('staff')"><i class="fas fa-users"></i> Nhân Sự</div>
@@ -435,7 +435,10 @@
                     }
                 }
                 saveLocal(); renderStaff(); updateDeptList();
-                alert(`✅ Đã nhập thành công ${count} nhân viên!`);
+                
+                // === FIX: AUTO SAVE STAFF AFTER IMPORT ===
+                saveStaffToCloud(true); // Gọi hàm lưu với tham số silent=true
+                alert(`✅ Đã nhập thành công ${count} nhân viên và đang lưu lên Sheet!`);
                 input.value = ""; 
             };
             reader.readAsArrayBuffer(file);
@@ -576,6 +579,9 @@
             if(!id||!name) return alert("Thiếu thông tin");
             DB.staff.push({id, name, dept:document.getElementById('addDept').value, salary:parseFloat(document.getElementById('addSalary').value)||0});
             saveLocal(); renderStaff(); updateDeptList();
+            
+            // === FIX: AUTO SAVE STAFF ===
+            saveStaffToCloud(true);
             document.getElementById('addId').value=''; document.getElementById('addName').value='';
         }
         function renderStaff() {
@@ -584,10 +590,24 @@
                 <tr><td><input type="checkbox" class="staff-cb" data-id="${s.id}"></td><td><b>${s.id}</b></td><td>${s.name}</td><td>${s.dept}</td><td>${(s.salary||0).toLocaleString()}</td><td><i class="fas fa-trash" style="color:red;cursor:pointer" onclick="delStaff('${s.id}')"></i></td></tr>
             `).join('');
         }
-        function delStaff(id) { if(confirm("Xóa?")) { DB.staff=DB.staff.filter(s=>s.id!==id); saveLocal(); renderStaff(); updateDeptList(); } }
+        function delStaff(id) { 
+            if(confirm("Xóa?")) { 
+                DB.staff=DB.staff.filter(s=>s.id!==id); 
+                saveLocal(); 
+                renderStaff(); 
+                updateDeptList();
+                saveStaffToCloud(true); // Auto Save after delete
+            } 
+        }
         function deleteSelectedStaff() {
             const ids=Array.from(document.querySelectorAll('.staff-cb:checked')).map(c=>c.dataset.id);
-            if(ids.length>0 && confirm("Xóa chọn?")) { DB.staff=DB.staff.filter(s=>!ids.includes(s.id)); saveLocal(); renderStaff(); updateDeptList(); }
+            if(ids.length>0 && confirm("Xóa chọn?")) { 
+                DB.staff=DB.staff.filter(s=>!ids.includes(s.id)); 
+                saveLocal(); 
+                renderStaff(); 
+                updateDeptList();
+                saveStaffToCloud(true); // Auto Save after bulk delete
+            }
         }
 
         // --- HISTORY ---
@@ -743,8 +763,20 @@
             }
         }
         
-        function saveStaffToCloud() {
-            if(confirm("Lưu?")) fetch(API_URL+"?action=save&staff="+encodeURIComponent(JSON.stringify(DB.staff))+"&users="+encodeURIComponent(JSON.stringify(DB.users))).then(r=>r.json()).then(d=>alert(d.success?"Đã lưu":"Lỗi"));
+        // FIX: Silent mode cho Auto Save
+        function saveStaffToCloud(silent = false) {
+            if(!silent && !confirm("Lưu?")) return;
+            
+            if(!silent) document.getElementById('syncStatus').innerHTML = '<i class="fas fa-sync fa-spin"></i> Đang lưu...';
+            
+            fetch(API_URL+"?action=save&staff="+encodeURIComponent(JSON.stringify(DB.staff))+"&users="+encodeURIComponent(JSON.stringify(DB.users)))
+            .then(r=>r.json())
+            .then(d=>{
+                if(!silent) {
+                    alert(d.success?"Đã lưu":"Lỗi");
+                    document.getElementById('syncStatus').innerHTML = '<i class="fas fa-check-circle" style="color:green"></i> Đã lưu xong';
+                }
+            });
         }
         function updateDeptList() {
             const d=[...new Set(DB.staff.map(s=>s.dept ? s.dept.trim() : "").filter(x=>x))];
