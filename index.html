@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DONGJU SPORT - OT SYSTEM v6.4 (Stable Input)</title>
+    <title>DONGJU SPORT - OT SYSTEM v6.7 (Connected)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -102,7 +102,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">DONGJU SPORT</div>
-                <div style="opacity:0.7; font-size:0.8rem">Version 6.4 (Stable Input)</div>
+                <div style="opacity:0.7; font-size:0.8rem">Version 6.7 (Connected)</div>
             </div>
             <div class="nav-items">
                 <div id="nav-staff" class="nav-item active" onclick="switchTab('staff')"><i class="fas fa-users"></i> Nhân Sự</div>
@@ -113,8 +113,8 @@
             </div>
             <div class="user-info">
                 <div><i class="fas fa-user-circle"></i> Admin</div>
-                <button class="btn btn-danger btn-sm" style="width:100%; margin-top:10px" onclick="clearAllData()">
-                    <i class="fas fa-trash"></i> Xóa Cache (Reset)
+                <button type="button" class="btn btn-danger btn-sm" style="width:100%; margin-top:10px" onclick="clearAllData()">
+                    <i class="fas fa-trash"></i> Xóa Cache
                 </button>
             </div>
         </div>
@@ -128,7 +128,7 @@
                     <div id="date-tool" class="hidden">
                         <input type="date" id="workDate" onchange="renderOTFast()" style="font-weight:bold; color:var(--primary); padding: 5px; border-radius:4px; border:1px solid #ccc;">
                     </div>
-                    <button class="btn btn-primary btn-sm" onclick="forceReload()"><i class="fas fa-sync"></i> Tải lại</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="forceReload()"><i class="fas fa-sync"></i> Tải lại</button>
                 </div>
             </div>
 
@@ -142,8 +142,8 @@
                             <input type="text" id="addName" placeholder="Họ Tên">
                             <input type="text" id="addDept" placeholder="Bộ Phận" style="width:120px">
                             <input type="number" id="addSalary" placeholder="Lương CB" style="width:120px">
-                            <button class="btn btn-primary" onclick="addNewStaff()">Thêm</button>
-                            <button class="btn btn-success" onclick="saveStaffToCloud()">Lưu lên Sheet</button>
+                            <button type="button" class="btn btn-primary" onclick="addNewStaff()">Thêm</button>
+                            <button type="button" class="btn btn-success" onclick="saveStaffToCloud()">Lưu lên Sheet</button>
                         </div>
                     </div>
                     <div class="card">
@@ -154,8 +154,8 @@
                                 <i class="fas fa-file-excel"></i> Nhập Excel/CSV
                                 <input type="file" id="excelInput" hidden onchange="importExcel(this)">
                             </label>
-                            <button class="btn btn-warning btn-sm" onclick="downloadTemplate()"><i class="fas fa-download"></i> Tải mẫu</button>
-                            <button class="btn btn-danger" onclick="deleteSelectedStaff()" style="margin-left:auto">Xóa chọn</button>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="downloadTemplate()"><i class="fas fa-download"></i> Tải mẫu</button>
+                            <button type="button" class="btn btn-danger" onclick="deleteSelectedStaff()" style="margin-left:auto">Xóa chọn</button>
                         </div>
                         <div style="overflow-x:auto; max-height: 500px;">
                             <table>
@@ -191,8 +191,8 @@
                             </div>
 
                             <input type="text" id="searchOT" placeholder="Nhập Mã NV..." style="width:180px" onkeyup="handleSearchOT(event)">
-                            <button class="btn btn-warning btn-sm" onclick="toggleTurbo()" id="turboBtn">Turbo: OFF</button>
-                            <button class="btn btn-success" onclick="exportExcelFile()">Xuất Excel</button>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="toggleTurbo()" id="turboBtn">Turbo: OFF</button>
+                            <button type="button" class="btn btn-success" onclick="exportExcelFile()">Xuất Excel</button>
                         </div>
                     </div>
 
@@ -203,9 +203,9 @@
                             <b>2.1</b> <input type="text" id="b21" class="ot-input-fast">
                             <b>2.0</b> <input type="text" id="b20" class="ot-input-fast">
                             <b>3.5</b> <input type="text" id="b35" class="ot-input-fast">
-                            <button class="btn btn-warning btn-sm" onclick="applyBulk(true)">Chọn</button>
-                            <button class="btn btn-gray btn-sm" onclick="applyBulk(false)">Tất cả (Đang hiển thị)</button>
-                            <button class="btn btn-danger btn-sm" onclick="clearDayOT()" style="margin-left:auto">Xóa ngày</button>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="applyBulk(true)">Chọn</button>
+                            <button type="button" class="btn btn-gray btn-sm" onclick="applyBulk(false)">Tất cả (Đang hiển thị)</button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="clearDayOT()" style="margin-left:auto">Xóa ngày</button>
                         </div>
                     </div>
 
@@ -242,8 +242,8 @@
 
                             <input type="date" id="historyFrom">
                             <input type="date" id="historyTo">
-                            <button class="btn btn-primary" onclick="loadHistory()">Xem</button>
-                            <button id="btnPrint" class="btn btn-warning hidden" onclick="printHistory()"><i class="fas fa-print"></i> In Phiếu</button>
+                            <button type="button" class="btn btn-primary" onclick="loadHistory()">Xem</button>
+                            <button type="button" id="btnPrint" class="btn btn-warning hidden" onclick="printHistory()"><i class="fas fa-print"></i> In Phiếu</button>
                         </div>
 
                         <div id="historyUserInfo" class="history-info hidden">
@@ -278,7 +278,7 @@
                                 <option value="last">Tháng trước</option>
                                 <option value="all">Toàn bộ</option>
                             </select>
-                            <button class="btn btn-primary" onclick="renderReports()"><i class="fas fa-sync"></i> Làm mới</button>
+                            <button type="button" class="btn btn-primary" onclick="renderReports()"><i class="fas fa-sync"></i> Làm mới</button>
                         </div>
                         <div class="summary-cards">
                             <div class="summary-card sc-blue"><div class="sc-title">Tổng giờ OT</div><div class="sc-value" id="repTotalHours">0h</div></div>
@@ -295,7 +295,7 @@
                         <div class="card-header"><i class="fas fa-database"></i> SAO LƯU & KHÔI PHỤC</div>
                         <div style="padding:15px; background:#e3f2fd; border-radius:8px; margin-bottom:20px; display:flex; gap:15px; align-items:center;">
                             <div style="flex:1"><strong>Sao lưu về máy:</strong><br><small>Tải dữ liệu về máy để dự phòng.</small></div>
-                            <button class="btn btn-success" onclick="backupData()"><i class="fas fa-download"></i> Tải về</button>
+                            <button type="button" class="btn btn-success" onclick="backupData()"><i class="fas fa-download"></i> Tải về</button>
                         </div>
                         <div style="padding:15px; background:#fff3e0; border-radius:8px; margin-bottom:20px; display:flex; gap:15px; align-items:center;">
                             <div style="flex:1"><strong>Khôi phục dữ liệu:</strong><br><small>Chọn file .json để phục hồi.</small></div>
@@ -312,8 +312,8 @@
                             <input type="text" id="newUsername" placeholder="Username">
                             <input type="password" id="newPassword" placeholder="Password">
                             <select id="newRole"><option value="user">User</option><option value="admin">Admin</option></select>
-                            <button class="btn btn-primary" onclick="createAccount()">Tạo</button>
-                            <button class="btn btn-success" onclick="saveStaffToCloud()">Lưu Sheet</button>
+                            <button type="button" class="btn btn-primary" onclick="createAccount()">Tạo</button>
+                            <button type="button" class="btn btn-success" onclick="saveStaffToCloud()">Lưu Sheet</button>
                         </div>
                         <table>
                             <thead><tr><th>Tài khoản</th><th>Quyền</th><th>Ngày tạo</th><th>Xóa</th></tr></thead>
@@ -326,7 +326,9 @@
     </div>
 
     <script>
+        // CẤU HÌNH API
         const API_URL = "https://script.google.com/macros/s/AKfycbzC1qlowBk3Qed6YZXOPJ6hmf4l8FG171OD3NCxLaKqYGgLQoNM_0ey0B89GeiGPSsQTA/exec";
+        
         let DB = { staff: [], ot: {}, users: [] };
         let QUEUE = { items: [], isSending: false, batchSize: 20, timer: null };
         let TURBO_MODE = false;
@@ -335,10 +337,8 @@
         window.onload = function() {
             document.getElementById('workDate').value = new Date().toISOString().split('T')[0];
             loadLocal();
-            // FIX: Không tự động reload nếu DB trống, để người dùng nhập liệu
+            // FIX RELOAD LOOP: Chỉ tải lại khi chưa có dữ liệu và không tự reload page
             if(DB.staff.length===0) { 
-                console.log("Database trống, sẵn sàng nhập liệu mới.");
-                // Tự động load 1 lần đầu
                 forceReload();
             } else { 
                 renderStaff(); updateDeptList(); renderAccounts(); updateLastBackupTime(); 
@@ -376,7 +376,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     if(data.staff && data.ot && confirm("Cảnh báo: Dữ liệu hiện tại sẽ bị thay thế. Tiếp tục?")) {
-                        DB = data; saveLocal(); location.reload();
+                        DB = data; saveLocal(); 
+                        // RE-RENDER INSTEAD OF RELOAD
+                        renderStaff(); updateDeptList(); renderOTFast(); renderAccounts();
+                        alert("Đã khôi phục dữ liệu thành công!");
                     }
                 } catch(err) { alert("File lỗi!"); }
             };
@@ -415,6 +418,7 @@
                 for(let i=1; i<json.length; i++) {
                     const row = json[i];
                     if(!row || row.length < 2) continue;
+                    // FIX: Check null before trim
                     const id = row[0] ? String(row[0]).trim() : "";
                     const name = row[1] ? String(row[1]).trim() : "";
                     const dept = row[2] ? String(row[2]).trim() : "";
@@ -469,7 +473,6 @@
             if(QUEUE.items.length>0||QUEUE.isSending) { q.classList.remove('hidden'); document.getElementById('queueCountBadge').innerText=QUEUE.items.length; } 
             else { 
                 q.classList.add('hidden'); 
-                // FIX: Không reload trang khi lưu xong
             }
         }
 
@@ -712,11 +715,34 @@
         function saveLocal() { localStorage.setItem('dongju_v64', JSON.stringify(DB)); }
         function loadLocal() { const d=localStorage.getItem('dongju_v64'); if(d) DB=JSON.parse(d); }
         function clearAllData() { if(confirm('Reset toàn bộ?')) { localStorage.removeItem('dongju_v64'); localStorage.removeItem('dongju_last_backup'); location.reload(); } }
+        
+        // FIX RELOAD LOOP: KHÔNG DÙNG location.reload()
         async function forceReload() {
-            document.getElementById('syncStatus').innerText="Đang tải...";
-            try { const res=await fetch(API_URL+"?action=load"); const d=await res.json(); if(d.success){ DB.staff=d.staff; DB.ot=d.ot; saveLocal(); location.reload(); } }
-            catch(e){ alert("Lỗi tải: "+e); }
+            document.getElementById('syncStatus').innerHTML = '<i class="fas fa-sync fa-spin"></i> Đang tải...';
+            try { 
+                const res=await fetch(API_URL+"?action=load"); 
+                const d=await res.json(); 
+                if(d.success){ 
+                    DB.staff=d.staff; 
+                    DB.ot=d.ot; 
+                    if(d.users) DB.users=d.users;
+                    saveLocal(); 
+                    
+                    // RE-RENDER ALL TABS
+                    renderStaff(); 
+                    updateDeptList(); 
+                    renderOTFast(); 
+                    renderAccounts();
+                    
+                    document.getElementById('syncStatus').innerHTML = '<i class="fas fa-check-circle" style="color:green"></i> Đã cập nhật';
+                } 
+            }
+            catch(e){ 
+                alert("Lỗi tải: "+e); 
+                document.getElementById('syncStatus').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:red"></i> Lỗi mạng';
+            }
         }
+        
         function saveStaffToCloud() {
             if(confirm("Lưu?")) fetch(API_URL+"?action=save&staff="+encodeURIComponent(JSON.stringify(DB.staff))+"&users="+encodeURIComponent(JSON.stringify(DB.users))).then(r=>r.json()).then(d=>alert(d.success?"Đã lưu":"Lỗi"));
         }
@@ -742,4 +768,4 @@
         function toggleTurbo() { TURBO_MODE=!TURBO_MODE; document.getElementById('turboBtn').innerText=TURBO_MODE?"Turbo: ON":"Turbo: OFF"; QUEUE.batchSize=TURBO_MODE?50:20; }
     </script>
 </body>
-</html>v
+</html>
