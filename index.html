@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DONGJU SPORT - OT SYSTEM v6.8 (Fix Save Staff)</title>
+    <title>DONGJU SPORT - OT SYSTEM v6.9 (Fix Select All)</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -102,7 +102,7 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">DONGJU SPORT</div>
-                <div style="opacity:0.7; font-size:0.8rem">Version 6.8 (Fix Save Staff)</div>
+                <div style="opacity:0.7; font-size:0.8rem">Version 6.9 (Fix Select All)</div>
             </div>
             <div class="nav-items">
                 <div id="nav-staff" class="nav-item active" onclick="switchTab('staff')"><i class="fas fa-users"></i> Nhân Sự</div>
@@ -161,6 +161,7 @@
                             <table>
                                 <thead style="position: sticky; top: 0; z-index: 1;">
                                     <tr>
+                                        <!-- FIX: toggleAllStaff -->
                                         <th style="width:40px"><input type="checkbox" onchange="toggleAllStaff(this)"></th>
                                         <th>Mã NV</th><th>Họ Tên</th><th>Bộ Phận</th><th>Lương CB</th><th>Xóa</th>
                                     </tr>
@@ -214,6 +215,7 @@
                             <table>
                                 <thead style="position: sticky; top: 0; z-index: 1;">
                                     <tr>
+                                        <!-- FIX: toggleAllOT -->
                                         <th style="width:40px"><input type="checkbox" class="ot-check-all" onchange="toggleAllOT(this)"></th>
                                         <th>Nhân Viên</th>
                                         <th class="text-center">1.5</th><th class="text-center">2.1</th>
@@ -571,7 +573,10 @@
             alert(`Đã áp dụng cho ${ids.length} nhân viên`);
         }
         function clearDayOT() { if(confirm("Xóa hết ngày này?")) { delete DB.ot[document.getElementById('workDate').value]; saveLocal(); renderOTFast(); } }
+        
+        // FIX: Toggle All logic
         function toggleAllOT(e) { document.querySelectorAll('.ot-cb').forEach(c=>c.checked=e.checked); }
+        function toggleAllStaff(e) { document.querySelectorAll('.staff-cb').forEach(c=>c.checked=e.checked); }
 
         // --- STAFF ---
         function addNewStaff() {
